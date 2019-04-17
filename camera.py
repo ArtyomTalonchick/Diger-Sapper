@@ -1,8 +1,5 @@
 from pygame import *
-import setting
-
-st = setting.Setting()
-
+from setting import Setting as st
 
 class Camera(object):
 

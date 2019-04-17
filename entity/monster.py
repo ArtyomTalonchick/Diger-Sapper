@@ -11,7 +11,7 @@ class Monster(sprite.Sprite):
         sprite.Sprite.__init__(self)
         self.is_alive = False
         self.PATH_IMAGE = "Images/monster.png"
-        self.MOVE_SPEED = 16
+        self.MOVE_SPEED = 8
         self.SLEEP_TIME = 2
         self.image = Surface((st.SIZE, st.SIZE))
         self.image = image.load(self.PATH_IMAGE)

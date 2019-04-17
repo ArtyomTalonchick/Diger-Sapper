@@ -3,7 +3,7 @@ import time
 
 from setting import Setting as st
 from data import Data
-from monster import Monster
+from .monster import Monster
 
 sign = lambda x: x and (1, -1)[x < 0]
 
@@ -16,4 +16,5 @@ class SuperMonster(Monster):
         self.SLEEP_TIME = 2
 
     def collide(self, xvel, yvel, hero):
-        pass
+        if sprite.collide_rect(self, hero):
+            hero.die()

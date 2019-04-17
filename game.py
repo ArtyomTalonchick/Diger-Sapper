@@ -1,15 +1,33 @@
 import pygame
 from pygame import *
-
-import camera as camera_cl
+import entity.hero as hero_cl
 from setting import Setting as st
+import building as bld
+import game
 from data import Data
+import camera as camera_cl
 
 
 class Game():
-    def play(self, screen, hero):
-        bg = Surface((st.WIN_WIDTH, st.WIN_HEIGHT))  # Создание видимой поверхности
-        bg.fill(Color(st.BACKGROUND_COLOR))  # Заливаем поверхность сплошным цветом
+    def __init__(self, screen):
+        self.screen = screen
+
+    def start(self):
+        Data.objects = pygame.sprite.Group()  # Все объекты
+        Data.platforms = []  # то, во что мы будем врезаться
+
+        bld.build_border()  # Создаем стенку вокруг
+        bld.build_block()  # Создаем блоки
+        bld.create_key()
+
+        hero = hero_cl.Hero(st.CENTER_X, st.CENTER_Y)  # создаем героя по (x,y) координатам
+        Data.objects.add(hero)
+
+        return self.play(hero)  # запускаем игровой процесс
+
+
+    def play(self, hero):
+        self.screen.fill(st.BACKGROUND_COLOR)
 
         open = False
         hor_move = vert_mov = 0
@@ -24,7 +42,7 @@ class Game():
                     exit(0)
                 if e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
-                        exit()
+                        hero.is_die = True
                     if e.key == K_SPACE:
                         open = True
                     if e.key == K_RIGHT:
@@ -46,7 +64,8 @@ class Game():
                         hor_move = 0
                     if e.key == K_UP or e.key == K_DOWN:
                         vert_mov = 0
-            screen.blit(bg, (0, 0))  # Заливаем экран
+
+            self.screen.fill(st.BACKGROUND_COLOR)
 
             hero.update(open, vert_mov, hor_move)  # передвижение
             if Data.key:
@@ -58,7 +77,8 @@ class Game():
 
             camera.update(hero)  # центризируем камеру относительно персонажа
             for e in Data.objects:
-                screen.blit(e.image, camera.apply(e))
+                self.screen.blit(e.image, camera.apply(e))
            # entities.draw(screen)  # отображение всего
 
             pygame.display.update()  # обновление и вывод всех изменений на экран
+        return hero.win

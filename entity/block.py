@@ -2,10 +2,10 @@ from pygame import *
 
 from setting import Setting as st
 from data import Data
-from monster import Monster
-from super_monster import SuperMonster
-from key import Key
-from exit import Exit
+from .monster import Monster
+from .super_monster import SuperMonster
+from .key import Key
+from .exit import Exit
 
 PLATFORM_COLOR = "#BDBDBD"
 

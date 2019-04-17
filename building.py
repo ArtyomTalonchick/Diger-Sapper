@@ -1,8 +1,8 @@
 from pygame import *
 
 import random
-from block import Block
-from border import Border
+from entity.block import Block
+from entity.border import Border
 from setting import Setting as st
 from data import Data
 
@@ -21,11 +21,11 @@ def build_block():
         for y in range(st.NUMBER_ROW):
             if not (x == st.NUMBER_COLUMN / 2 and y == st.NUMBER_ROW / 2):
                 block = Block(st.SIZE_BORDER + st.SIZE * x, st.SIZE_BORDER + st.SIZE * y)
-                if not random.randint(0, 10) and block.is_empty():
+                if not random.randint(0, st.DENSITY_MINES) and block.is_empty():
                     block.is_mine = True
-                elif not random.randint(0, 10) and block.is_empty():
+                elif not random.randint(0, st.DENSITY_MONSTERS) and block.is_empty():
                     block.is_monster = True
-                elif not random.randint(0, 10) and block.is_empty():
+                elif not random.randint(0, st.DENSITY_SUPERMONSTERS) and block.is_empty():
                     block.is_super_monster = True
                 Data.blocks[x][y] = block
 
