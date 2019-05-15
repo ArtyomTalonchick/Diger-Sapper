@@ -5,9 +5,10 @@ from setting import Setting as st
 import building as bld
 from data import Data
 from menu import Menu
-
+from mongo import restore_settings
 
 def main():
+    restore_settings()
     pygame.init()  # Инициация PyGame
     screen = pygame.display.set_mode((st.WIN_WIDTH, st.WIN_HEIGHT))  # Создаем окно
     pygame.display.set_caption("Diger-saper")  # Пишем в шапку

@@ -7,26 +7,29 @@ import game
 from data import Data
 import camera as camera_cl
 
+import mongo
 
 class Game():
     def __init__(self, screen):
         self.screen = screen
 
-    def start(self):
+    def start(self, restore):
         Data.objects = pygame.sprite.Group()  # Все объекты
-        Data.platforms = []  # то, во что мы будем врезаться
+        #Data.platforms = []  # то, во что мы будем врезаться
 
         bld.build_border()  # Создаем стенку вокруг
-        bld.build_block()  # Создаем блоки
-        bld.create_key()
+        if restore:
+            mongo.restore()
+        else:
+            bld.build_block()  # Создаем блоки
+            bld.create_key()
+            Data.hero = hero_cl.Hero(st.CENTER_X, st.CENTER_Y)  # создаем героя по (x,y) координатам
 
-        hero = hero_cl.Hero(st.CENTER_X, st.CENTER_Y)  # создаем героя по (x,y) координатам
-        Data.objects.add(hero)
-
-        return self.play(hero)  # запускаем игровой процесс
+        return self.play()  # запускаем игровой процесс
 
 
-    def play(self, hero):
+    def play(self):
+        hero = Data.hero
         self.screen.fill(st.BACKGROUND_COLOR)
 
         open = False
@@ -35,14 +38,17 @@ class Game():
 
         camera = camera_cl.Camera(st.LEVEL_WIDTH, st.LEVEL_HEIGHT)
 
-        while not (hero.is_die or hero.win):  # Основной цикл программы
+        hero.is_die, hero.win = False, False
+        save_game = False
+        while not (hero.is_die or hero.win or save_game):  # Основной цикл программы
+            hero.is_die, hero.win = False, False
             timer.tick(10)
             for e in pygame.event.get():  # Обрабатываем события
                 if e.type == QUIT:
                     exit(0)
                 if e.type == KEYDOWN:
                     if e.key == K_ESCAPE:
-                        hero.is_die = True
+                        save_game = True
                     if e.key == K_SPACE:
                         open = True
                     if e.key == K_RIGHT:
@@ -74,6 +80,8 @@ class Game():
                 Data.exit.go_out(hero)
             for monster in Data.monsters:
                 monster.update(hero)
+            for monster in Data.super_monsters:
+                monster.update(hero)
 
             camera.update(hero)  # центризируем камеру относительно персонажа
             for e in Data.objects:
@@ -81,4 +89,12 @@ class Game():
            # entities.draw(screen)  # отображение всего
 
             pygame.display.update()  # обновление и вывод всех изменений на экран
-        return hero.win
+        timer.tick(5)
+        if save_game:
+            return 0
+        elif hero.win:
+            return 1
+        elif hero.is_die:
+            return -1
+        else:
+            raise

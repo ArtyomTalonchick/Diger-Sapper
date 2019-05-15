@@ -27,7 +27,6 @@ def build_block():
                     block.is_monster = True
                 elif not random.randint(0, st.DENSITY_SUPERMONSTERS) and block.is_empty():
                     block.is_super_monster = True
-                Data.blocks[x][y] = block
 
 
 def search_empty_block():
@@ -45,7 +44,7 @@ def create_arrows(x, y):
 
 
 def create_arrow(block, path):
-    if not random.randint(0, 10) and block.is_empty():
+    if not random.randint(0, 5) and block.is_empty():
         block.arrow(path)
         Data.arrow.append(block)
 

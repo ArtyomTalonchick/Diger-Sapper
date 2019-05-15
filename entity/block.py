@@ -18,6 +18,9 @@ class Block(sprite.Sprite):
         self.rect = Rect(x, y, st.SIZE, st.SIZE)
         Data.objects.add(self)
         Data.platforms.append(self)
+        index_x = int((x - st.SIZE_BORDER  ) / st.SIZE)
+        index_y = int((y - st.SIZE_BORDER  ) / st.SIZE)
+        Data.blocks[index_x][index_y] = self
         self.is_mine = False
         self.is_monster = False
         self.is_super_monster = False
@@ -25,12 +28,12 @@ class Block(sprite.Sprite):
         self.is_exit = False
         self.is_open = False
 
-    def open(self, hero):
+    def open(self):
         try:
             Data.platforms.remove(self)
             x, y = self.search()
             if self.is_mine:
-                self.open_mine(hero)
+                self.open_mine(Data.hero)
             elif self.is_monster:
                 self.open_monster()
             elif self.is_super_monster:
@@ -50,6 +53,31 @@ class Block(sprite.Sprite):
             self.is_open = True
         except:
             pass
+
+    def restore(self):
+        if not self.is_open:
+            return None
+        try:
+            Data.platforms.remove(self)
+            x, y = self.search()
+            if self.is_mine:
+                self.open_mine(Data.hero)
+            elif self.is_key:
+                self.open_key()
+            elif self.is_exit:
+                self.open_exit()
+            elif (x, y) != (-1, -1):
+                num_mine = self.count_number_of_mines_near(x, y)
+                if num_mine == 0:
+                    self.open_empty()
+                else:
+                    self.image = image.load("Images/Number/{0}.png".format(num_mine))
+            else:
+                self.open_empty()
+            self.is_open = True
+        except:
+            pass
+
 
     def open_mine(self, hero):
         self.image = image.load("Images/mine.png")
@@ -108,7 +136,8 @@ class Block(sprite.Sprite):
         return -1, -1
 
     def is_empty(self):
-        return not (self.is_mine or self.is_monster or self.is_key or self.is_exit or self.is_open or self.is_super_monster)
+        return not (self.is_mine or self.is_monster or
+         self.is_key or self.is_exit or self.is_open or self.is_super_monster)
 
     def arrow(self, path):
         self.image = image.load(path)

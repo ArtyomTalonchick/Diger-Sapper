@@ -10,15 +10,16 @@ ANIMATION = [('Images/Hero/10.png', 0.1)]
 
 
 class Hero(sprite.Sprite):
-    win = False
-    is_die = False
-    last_p = 0
-    has_key = False
     def __init__(self, x, y):
         sprite.Sprite.__init__(self)
         self.image = Surface((st.SIZE, st.SIZE))
         self.image = image.load("Images/Hero/10.png")
         self.rect = Rect(x, y, st.SIZE, st.SIZE)
+        Data.objects.add(self)
+        self.win = False
+        self.is_die = False
+        self.last_p = 0
+        self.has_key = False
        # self.boltAnimStay = pyganim.PygAnimation(ANIMATION)
       #  self.boltAnimStay.play()
         #self.boltAnimStay.blit(self.image, (0, 0))
@@ -31,7 +32,7 @@ class Hero(sprite.Sprite):
             #self.boltAnimStay.blit(self.image, (0, 0))
 
         if open and self.last_p != 0:
-            self.last_p.open(self)
+            self.last_p.open()
 
         self.rect.y += vert_move * st.MOVE_SPEED
         #self.collide(0, vert_move, open, platforms)
@@ -51,7 +52,7 @@ class Hero(sprite.Sprite):
                 if yvel < 0:                      # если движется вверх
                     self.rect.top = p.rect.bottom # то не движется вверх
                 if open:
-                    p.open(self)
+                    p.open()
                 self.last_p = p
 
     def die(self):

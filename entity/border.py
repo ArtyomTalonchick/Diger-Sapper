@@ -14,5 +14,5 @@ class Border(sprite.Sprite):
         Data.objects.add(self)
         Data.platforms.append(self)
 
-    def open(self, hero):
+    def open(self):
         pass

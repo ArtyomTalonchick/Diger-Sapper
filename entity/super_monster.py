@@ -14,6 +14,8 @@ class SuperMonster(Monster):
         self.image = image.load(self.PATH_IMAGE)
         self.MOVE_SPEED = 1
         self.SLEEP_TIME = 2
+        Data.super_monsters.append(self)
+        Data.monsters.remove(self)
 
     def collide(self, xvel, yvel, hero):
         if sprite.collide_rect(self, hero):

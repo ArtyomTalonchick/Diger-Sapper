@@ -14,6 +14,9 @@ class Key(sprite.Sprite):
         Data.key = self
 
     def update(self, hero):
+        if sprite.collide_rect(self, hero):
+            self.image = image.load("Images/key_small.png")
+
         if not hero.has_key and sprite.collide_rect(self, hero):
             hero.has_key = True
             self.image = image.load("Images/key_small.png")
