@@ -107,22 +107,26 @@ class Block(sprite.Sprite):
     def count_number_of_mines_near(self, x, y):
         num_mine = 0
         try:    # ****-кодские проверки x, y недопускают перескока в разные концы массива
-            if x > 0 and Data.blocks[x - 1][y].is_mine:
+            block = Data.blocks[x - 1][y]
+            if x > 0 and (block.is_mine or block.is_monster or block.is_super_monster):
                 num_mine += 1
         except:
             pass
         try:
-            if x < len(Data.blocks) - 1 and Data.blocks[x + 1][y].is_mine:
+            block = Data.blocks[x + 1][y]
+            if x < len(Data.blocks) - 1 and (block.is_mine or block.is_monster or block.is_super_monster):
                 num_mine += 1
         except:
             pass
         try:
-            if y > 0 and Data.blocks[x][y - 1].is_mine:
+            block = Data.blocks[x][y - 1]
+            if y > 0 and (block.is_mine or block.is_monster or block.is_super_monster):
                 num_mine += 1
         except:
             pass
         try:
-            if y < len(Data.blocks[0]) - 1 and Data.blocks[x][y + 1].is_mine:
+            block = Data.blocks[x][y + 1]
+            if y < len(Data.blocks[0]) - 1 and (block.is_mine or block.is_monster or block.is_super_monster):
                 num_mine += 1
         except:
             pass

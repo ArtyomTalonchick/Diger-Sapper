@@ -31,16 +31,18 @@ def build_block():
 
 def search_empty_block():
     x, y = random.randint(0, st.NUMBER_COLUMN - 1), random.randint(0, st.NUMBER_ROW - 1)
-    while not Data.blocks[x][y].is_empty():
+    while not Data.blocks[x][y].is_empty() or (x == st.NUMBER_COLUMN / 2 and y == st.NUMBER_ROW / 2):
         x, y = random.randint(0, st.NUMBER_COLUMN - 1), random.randint(0, st.NUMBER_ROW - 1)
     return x, y
 
 
 def create_arrows(x, y):
     for _x in range(st.NUMBER_COLUMN):
-        create_arrow(Data.blocks[_x][y], "Images/horizontal.png")
+        if not (_x == st.NUMBER_COLUMN / 2):
+            create_arrow(Data.blocks[_x][y], "Images/horizontal.png")
     for _y in range(st.NUMBER_ROW):
-        create_arrow(Data.blocks[x][_y], "Images/vertical.png")
+        if not (_y == st.NUMBER_ROW / 2):
+            create_arrow(Data.blocks[x][_y], "Images/vertical.png")
 
 
 def create_arrow(block, path):

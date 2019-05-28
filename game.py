@@ -12,12 +12,13 @@ import mongo
 class Game():
     def __init__(self, screen):
         self.screen = screen
+        self.chit_cod = '00000'
 
     def start(self, restore):
+        self.chit_cod = '00000'
         Data.objects = pygame.sprite.Group()  # Все объекты
         #Data.platforms = []  # то, во что мы будем врезаться
 
-        bld.build_border()  # Создаем стенку вокруг
         if restore:
             mongo.restore()
         else:
@@ -25,6 +26,7 @@ class Game():
             bld.create_key()
             Data.hero = hero_cl.Hero(st.CENTER_X, st.CENTER_Y)  # создаем героя по (x,y) координатам
 
+        bld.build_border()  # Создаем стенку вокруг
         return self.play()  # запускаем игровой процесс
 
 
@@ -63,6 +65,8 @@ class Game():
                     elif e.key == K_DOWN:
                         vert_mov = 1
                         hor_move = 0
+                    else:
+                        self.get_chit_cod(e.key)
                 if e.type == KEYUP:
                     if e.key == K_SPACE:
                         open = False
@@ -98,3 +102,32 @@ class Game():
             return -1
         else:
             raise
+
+    def get_chit_cod(self, key):
+        if key == K_d:
+            self.chit_cod = self.chit_cod[1:] + 'd'
+        elif key == K_i:
+            self.chit_cod = self.chit_cod[1:] + 'i'
+        elif key == K_e:
+            self.chit_cod = self.chit_cod[1:] + 'e'
+        elif key == K_w:
+            self.chit_cod = self.chit_cod[1:] + 'w'
+        elif key == K_i:
+            self.chit_cod = self.chit_cod[1:] + 'i'
+        elif key == K_n:
+            self.chit_cod = self.chit_cod[1:] + 'n'
+        elif key == K_k:
+            self.chit_cod = self.chit_cod[1:] + 'k'
+        elif key == K_y:
+            self.chit_cod = self.chit_cod[1:] + 'y'
+        elif key == K_n:
+            self.chit_cod = self.chit_cod[1:] + 'n'
+        if 'die' in self.chit_cod:
+            Data.hero.die()
+        if 'nodie' in self.chit_cod:
+            Data.hero.no_die()
+        if 'win' in self.chit_cod:
+            Data.hero.win = True
+        if 'key' in self.chit_cod:
+            Data.hero.has_key = True
+        print(self.chit_cod)

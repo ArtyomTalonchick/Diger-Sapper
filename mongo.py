@@ -1,10 +1,77 @@
 import pymongo
+import pygame
+import numpy as np
 from data import Data
 from entity.block import Block
 from setting import Setting as st
 import entity.hero as hero_cl
 from entity.monster import Monster
 from entity.super_monster import SuperMonster
+
+
+def create_ml_all_data():
+    x = Data.machine_learning_x
+    y = Data.machine_learning_y
+    n = Data.machine_learning_n
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["mydatabase"]#create db
+    mycol = mydb["ml"]#find collection
+    mycol.drop()
+    mycol = mydb["ml"]#find collection
+    mylist = []
+    print(x)
+    for i in range(len(x)):
+        new_x = []
+        for j in range(3):
+            new_x.append(int(x[i][j]))
+        mylist.append({"x": new_x, "y": int(y[i]), "n": int(n[i])})
+    if mylist:
+        return mycol.insert_many(mylist)
+
+def push_ml_one_data(x, y):
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["mydatabase"]#create db
+    mycol = mydb["ml"]#find collection
+    X = Data.machine_learning_x
+    Y = Data.machine_learning_y
+    N = Data.machine_learning_n
+    ans=-1
+    for i in range(X.shape[0]):
+        if X[i][0]==x[0] and X[i][1]==x[1] and X[i][2]==x[2]:
+            ans = i
+            break
+    new_x = [int(_x) for _x in x]
+    if ans == -1:
+        return mycol.insert_one({"x": new_x, "y": int(y), "n": int(1)})
+    else:
+        i = ans
+        Y[i] = (Y[i]*N[i]+y)/(N[i]+1)
+        N[i] += 1
+        myquery = { "x": new_x }
+        newvalues = { "$set": { "y": int(Y[i]), "n": int(N[i]) } }
+        return mycol.update_one(myquery, newvalues)
+
+    #return mycol.updateOne({"x1": x[0], "x2": x[1], "x2": x[2]}, mydict)
+
+def get_ml_data():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["mydatabase"]#create db
+    mycol = mydb["ml"] #create collection
+    mylist = mycol.find()
+    if not mylist:
+        return -1
+    data = mylist[0]
+    x = np.array([data["x"]])
+    y = np.array([data["y"]])
+    n = np.array([data["n"]])
+    for i in range(1, mylist.count()):
+        data = mylist[i]
+        x = np.vstack([x, data["x"]])
+        y = np.append(y, [data["y"]], axis=0)
+        n = np.append(n, [data["n"]], axis=0)
+    Data.machine_learning_x = x
+    Data.machine_learning_y = y
+    Data.machine_learning_n = n
 
 
 def save():
@@ -14,8 +81,7 @@ def save():
     save_blocks(mydb)
     save_monsters(mydb)
     save_super_monsters(mydb)
-
-
+    clear_data()
 def restore():
     clear_data();
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -31,7 +97,7 @@ def clear_data():
     Data.blocks = [[None for x in range(st.NUMBER_ROW)] for x in range(st.NUMBER_COLUMN)]
     Data.arrow = []
     Data.platforms = []
-    #Data.objects = []
+    Data.objects.empty()
     Data.monsters = []
     Data.super_monsters = []
     Data.key = None
@@ -53,7 +119,6 @@ def save_blocks(mydb):
                             "is_exit": block.is_exit, "is_open": block.is_open,})
     if mylist:
         return mycol.insert_many(mylist)
-
 def restore_blocks(mydb):
     mycol = mydb["blocks"] #create collection
     mylist = mycol.find()
@@ -74,7 +139,6 @@ def restore_blocks(mydb):
                 #block.open()
 
 
-
 def save_hero(mydb):
     mycol = mydb["hero"]#find collection
     mycol.drop()
@@ -83,7 +147,6 @@ def save_hero(mydb):
     mydict = {"x": hero.rect.x, "y": hero.rect.y,
                     "has_key": hero.has_key}
     return mycol.insert_one(mydict)
-
 def restore_hero(mydb):
     mycol = mydb["hero"] #create collection
     data_hero = mycol.find_one()
@@ -100,7 +163,6 @@ def save_monsters(mydb):
         mylist.append({"x": monster.rect.x, "y": monster.rect.y})
     if mylist:
         return mycol.insert_many(mylist)
-
 def restore_monsters(mydb):
     mycol = mydb["monsters"] #create collection
     mylist = mycol.find()
@@ -117,7 +179,6 @@ def save_super_monsters(mydb):
         mylist.append({"x": super_monsters.rect.x, "y": super_monsters.rect.y})
     if mylist:
         return mycol.insert_many(mylist)
-
 def restore_super_monsters(mydb):
     mycol = mydb["super_monsters"] #create collection
     mylist = mycol.find()
@@ -139,7 +200,6 @@ def save_settings():
                 "DENSITY_MINES": st.DENSITY_MINES, "DENSITY_MONSTERS": st.DENSITY_MONSTERS,
                 "DENSITY_SUPERMONSTERS": st.DENSITY_SUPERMONSTERS }
     return mycol.insert_one(mydict)
-
 def restore_settings():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["mydatabase"]

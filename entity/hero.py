@@ -1,6 +1,7 @@
 from pygame import *
 
 import pyganim
+import time
 
 from setting import Setting as st
 from data import Data
@@ -20,9 +21,16 @@ class Hero(sprite.Sprite):
         self.is_die = False
         self.last_p = 0
         self.has_key = False
+        self.no_die = 0
        # self.boltAnimStay = pyganim.PygAnimation(ANIMATION)
       #  self.boltAnimStay.play()
         #self.boltAnimStay.blit(self.image, (0, 0))
+
+    def nodie(self):
+        if self.no_die == 0:
+            self.no_die = int(round(time.time()))
+        
+
 
     def update(self, open, vert_move, hor_move):
 
@@ -57,4 +65,4 @@ class Hero(sprite.Sprite):
 
     def die(self):
         pass
-        #self.is_die = True
+        self.is_die = True

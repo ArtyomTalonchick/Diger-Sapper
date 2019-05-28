@@ -5,6 +5,7 @@ from enum import Enum
  #   global blocks
   #  blocks = [[None for x in range(st.NUMBER_ROW)] for x in range(st.NUMBER_COLUMN)]
 
+
 class Data:
     hero = None
     blocks = [[None for x in range(st.NUMBER_ROW)] for x in range(st.NUMBER_COLUMN)]
@@ -15,3 +16,6 @@ class Data:
     super_monsters = []
     key = None
     exit = None
+    machine_learning_x = None
+    machine_learning_y = None
+    machine_learning_n = None
